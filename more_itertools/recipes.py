@@ -38,7 +38,7 @@ def take(n, iterable):
         [0, 1, 2]
 
     """
-    pass
+    return list(islice(iterable, n))
 
 def tabulate(function, start=0):
     """Return an iterator over the results of ``func(start)``,
@@ -55,7 +55,7 @@ def tabulate(function, start=0):
         [9, 4, 1, 0]
 
     """
-    pass
+    return map(function, count(start))
 
 def tail(n, iterable):
     """Return an iterator over the last *n* items of *iterable*.
@@ -65,7 +65,7 @@ def tail(n, iterable):
     ['E', 'F', 'G']
 
     """
-    pass
+    return iter(deque(iterable, maxlen=n))
 
 def consume(iterator, n=None):
     """Advance *iterable* by *n* steps. If *n* is ``None``, consume it
@@ -98,7 +98,13 @@ def consume(iterator, n=None):
         StopIteration
 
     """
-    pass
+    # Use functions that consume iterators at C speed.
+    if n is None:
+        # feed the entire iterator into a zero-length deque
+        deque(iterator, maxlen=0)
+    else:
+        # advance to the empty slice starting at position n
+        next(islice(iterator, n, n), None)
 
 def nth(iterable, n, default=None):
     """Returns the nth item or a default value.
